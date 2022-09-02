@@ -1,2 +1,2 @@
 # MERN-Lab11
-Mern tut for myself
+Updated for today's code-along 01/02/2022
