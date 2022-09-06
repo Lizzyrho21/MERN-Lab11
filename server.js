@@ -17,16 +17,17 @@ app.use(bodyParser.json())
 
 // Read ALL
 app.get('/employees', async (req, res) => {
-   
+
     const employees = await Employee.find(); // if empty, gets all employees
 
     res.status(200).send(employees);
 })
 
+// Read +1
 app.get('/employee', async (req, res) => {
-    const {firstName} = req.query; // from the user
+    const { firstName } = req.query; // from the user
     // use the findOne() method
-    const employees = await Employee.findOne({firstname: firstName}); // if empty, gets all employees
+    const employees = await Employee.findOne({ firstname: firstName }); // if empty, gets all employees
 
     res.status(200).send(employees);
 })
@@ -36,36 +37,45 @@ app.get('/employee', async (req, res) => {
 
 // Create
 app.post('/new-employee', async (req, res) => {
-    try{
+    try {
         //If req.body has everything you need in the right place
         // then you can pass it straight to Model
         // But often you'll need to tweak the data a bit
         const newEmployee = await Employee.create(req.body); // same thing as seed data.. We are giving the user control
-        res.send(newEmployee); // send the created employee to our user
-    }catch(error){
+        res.send(`Employee sucuessfully Created : ${newEmployee}`); // send the created employee to our user
+    } catch (error) {
         console.error(error);
         res.status(500).send('Error creating Employee');
     }
 })
 
-
-app.delete('/employee/:id', async (req,res) => {
+// delete
+app.delete('/employee/:id', async (req, res) => {
     const id = req.params.id; // From the client :)
 
-    try{
+    try {
 
         await Employee.findByIdAndDelete(id); // thos does ALL the work for me. yay!
 
         // We don't need to send any data, but we do need a success message
-       res.send('Employee Deleted :)');
+        res.send('Employee Deleted :)');
 
-    }catch(error){
+    } catch (error) {
         console.error(error);
         res.status(404).send('Unable to delete :( ')
     }
 
 })
 
+// update 
+app.put('/employee/update/:id', async (req, res) => {
+    try {
+        await Employee.findByIdAndUpdate(req.params.id, req.body);
+        res.send(`Employee changed. Please refresh for changes.`);
+    } catch (error) {
+        console.error('Cannot Update', error)
+    }
+});
 
 
 

@@ -12,6 +12,11 @@ const employeeSchema = new Schema({
     lastname: {
         type:String,
         required:true
+    },
+
+    age: {
+        type:String,
+        required:false,
     }
 
 

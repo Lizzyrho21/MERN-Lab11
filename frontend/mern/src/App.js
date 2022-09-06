@@ -13,6 +13,8 @@ export default class App extends Component {
 
     this.state = {
       employees: [],
+      showUpdateForm: false,
+      employeeId: '', // employee to be updated
 
     }
   }
@@ -43,6 +45,38 @@ export default class App extends Component {
     this.handleCreate(newInfo); // pass this into our create function!
   }
 
+  handleUpdateForm = (id) => {
+ 
+    this.setState({showUpdateForm: true, employeeId: id});
+  }
+
+  submitUpdate = async (event) => {
+  
+    // create an object with the required fields for our model
+    const newInfo = {
+      firstname: event.target.updatefirst.value,
+      lastname: event.target.updatelast.value,
+    }
+
+    const URL = `http://localhost:3008/employee/update/${this.state.employeeId}`;
+
+
+  
+      const response = await axios.put(URL, newInfo); // put == update
+      // console.log(response.data);
+       const updatedEmployee = this.state.employees.map(employee => {
+        if (employee._id === response.data._id){
+           return response.data;
+        }else{
+          return employee
+        }
+      });
+      
+      this.setState({employees: updatedEmployee}); 
+       
+      
+  }
+
   handleDelete = async (employeeDelete) => {
 
     const url = `http://localhost:3008/employee/${employeeDelete}`; // finds the ObjectID for us :0
@@ -57,6 +91,7 @@ export default class App extends Component {
     }
   }
 
+
   handleCreate = async (info) => {
     // we need to access our route to the post method.
     const URL = `http://localhost:3008/new-employee`;
@@ -69,7 +104,7 @@ export default class App extends Component {
     }, () => this.fetchEmployees()); // running a callback after the state is updated. takes a while ;)
   }
   render() {
-    const { employees } = this.state;
+    const { employees, showUpdateForm } = this.state;
     return (
       <>
         List of employees below:
@@ -79,6 +114,7 @@ export default class App extends Component {
             <div key={employee._id}>
               <h1>{employee.firstname}</h1>
               <button onClick={() => this.handleDelete(employee._id)}>Delete</button>
+              <button onClick={() => this.handleUpdateForm(employee._id)}>Update</button>
             </div>
           )
         }) : null}
@@ -89,6 +125,16 @@ export default class App extends Component {
           <button type='submit'>Submit</button>
 
         </form>
+        {showUpdateForm ? (
+          <>
+          <h1>Update Here!</h1>
+          <form onSubmit={this.submitUpdate}>
+            <input type='name' name='updatefirst'/>
+            <input type='name' name='updatelast'/>
+            <button type='submit'>Confirm Update</button>
+          </form>
+          </>
+        ) : null }
       </>
     )
   }
